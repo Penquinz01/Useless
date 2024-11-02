@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - Maze
+  - Trap
+  - Login
   layers:
   - Default
   - TransparentFX

@@ -35,6 +35,15 @@ public partial class @MainControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Last"",
+                    ""type"": ""Button"",
+                    ""id"": ""b0bd1128-9200-4a56-bc4a-df7b05d551f0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -147,6 +156,17 @@ public partial class @MainControls: IInputActionCollection2, IDisposable
                     ""action"": ""New action"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5b99b366-77ab-45db-802a-4ddd82d17627"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Last"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -156,6 +176,7 @@ public partial class @MainControls: IInputActionCollection2, IDisposable
         // Movement
         m_Movement = asset.FindActionMap("Movement", throwIfNotFound: true);
         m_Movement_Newaction = m_Movement.FindAction("New action", throwIfNotFound: true);
+        m_Movement_Last = m_Movement.FindAction("Last", throwIfNotFound: true);
     }
 
     ~@MainControls()
@@ -223,11 +244,13 @@ public partial class @MainControls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Movement;
     private List<IMovementActions> m_MovementActionsCallbackInterfaces = new List<IMovementActions>();
     private readonly InputAction m_Movement_Newaction;
+    private readonly InputAction m_Movement_Last;
     public struct MovementActions
     {
         private @MainControls m_Wrapper;
         public MovementActions(@MainControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Newaction => m_Wrapper.m_Movement_Newaction;
+        public InputAction @Last => m_Wrapper.m_Movement_Last;
         public InputActionMap Get() { return m_Wrapper.m_Movement; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -240,6 +263,9 @@ public partial class @MainControls: IInputActionCollection2, IDisposable
             @Newaction.started += instance.OnNewaction;
             @Newaction.performed += instance.OnNewaction;
             @Newaction.canceled += instance.OnNewaction;
+            @Last.started += instance.OnLast;
+            @Last.performed += instance.OnLast;
+            @Last.canceled += instance.OnLast;
         }
 
         private void UnregisterCallbacks(IMovementActions instance)
@@ -247,6 +273,9 @@ public partial class @MainControls: IInputActionCollection2, IDisposable
             @Newaction.started -= instance.OnNewaction;
             @Newaction.performed -= instance.OnNewaction;
             @Newaction.canceled -= instance.OnNewaction;
+            @Last.started -= instance.OnLast;
+            @Last.performed -= instance.OnLast;
+            @Last.canceled -= instance.OnLast;
         }
 
         public void RemoveCallbacks(IMovementActions instance)
@@ -267,5 +296,6 @@ public partial class @MainControls: IInputActionCollection2, IDisposable
     public interface IMovementActions
     {
         void OnNewaction(InputAction.CallbackContext context);
+        void OnLast(InputAction.CallbackContext context);
     }
 }

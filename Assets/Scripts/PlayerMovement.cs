@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,6 +10,8 @@ public class PlayerMovement : MonoBehaviour
     Animator anim;
     [SerializeField] Transform _startingPosition;
     [SerializeField] AudioManager audioManager;
+    private bool _canMove = true;
+    [SerializeField] Transform _endPoint;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -19,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        rb.linearVelocity = dir;
+        if(_canMove)rb.linearVelocity = dir;
         anim.SetFloat("SpeedX",rb.linearVelocity.x);
         anim.SetFloat("SpeedY",rb.linearVelocity.y);
         anim.SetFloat("Speed", (rb.linearVelocity == Vector2.zero) ? 0 : 1);
@@ -37,5 +40,33 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Maze")){
             audioManager.Play(0);
         }
+    }
+    public void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Trap"))
+        {
+            GameManager.Instance.Trap();
+            StartCoroutine(Restart());
+            
+        }
+        if (collision.CompareTag("Login"))
+        {
+            GameManager.Instance.LastScene();
+        }
+    }
+    IEnumerator Restart()
+    {   
+        _canMove = false;
+        rb.linearVelocity = Vector2.zero;
+        yield return new WaitForSeconds(3);
+        transform.position = _startingPosition.position;
+        _canMove = true;
+    }
+    public void T(InputAction.CallbackContext cxt)
+    {
+        if (cxt.performed)
+        {
+            transform.position = _endPoint.position;
+        } 
     }
 }
